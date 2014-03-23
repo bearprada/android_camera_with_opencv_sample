@@ -37,276 +37,277 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity implements CvCameraViewListener {
-	private static final String TAG = "test";
+    private static final String TAG = "test";
 
-	static {
-		System.loadLibrary("opencv_java");
-		System.loadLibrary("detection_based_tracker");
+    static {
+        System.loadLibrary("opencv_java");
+        System.loadLibrary("detection_based_tracker");
 
-	}
-	/*
-	 * private Preview mPreview; private Camera mCamera;
-	 */
-	private int numberOfCameras;
-	private int DEFAULT_CAMERA_ID;
-	private int cameraCurrentlyLocked;
-	private ImageView snapshot;
-	protected boolean isOpenFaceDetection;
-	private ExtendedJavaCamera mCamera;
-	private Mat mGray;
-	private Mat mRgba;
-	private int mAbsoluteFaceSize = 0;
-	private float mRelativeFaceSize;
+    }
+    /*
+     * private Preview mPreview; private Camera mCamera;
+     */
+    private int numberOfCameras;
+    private int DEFAULT_CAMERA_ID;
+    private int cameraCurrentlyLocked;
+    private ImageView snapshot;
+    protected boolean isOpenFaceDetection;
+    private ExtendedJavaCamera mCamera;
+    private Mat mGray;
+    private Mat mRgba;
+    private int mAbsoluteFaceSize = 0;
+    private float mRelativeFaceSize;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// Hide the window title.
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Hide the window title.
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		// Create a RelativeLayout container that will hold a SurfaceView,
-		// and set it as the content of our activity.
-		this.setContentView(R.layout.activity_main);
-		
-		/*
-		 * mPreview = new Preview(this); RelativeLayout.LayoutParams layout =
-		 * new
-		 * RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,
-		 * RelativeLayout.LayoutParams.FILL_PARENT);
-		 * mPreview.setLayoutParams(layout);
-		 */
+        // Create a RelativeLayout container that will hold a SurfaceView,
+        // and set it as the content of our activity.
+        this.setContentView(R.layout.activity_main);
 
-		numberOfCameras = Camera.getNumberOfCameras();
+        /*
+         * mPreview = new Preview(this); RelativeLayout.LayoutParams layout =
+         * new
+         * RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,
+         * RelativeLayout.LayoutParams.FILL_PARENT);
+         * mPreview.setLayoutParams(layout);
+         */
 
-		// Find the ID of the default camera
-		CameraInfo cameraInfo = new CameraInfo();
-		for (int i = 0; i < numberOfCameras; i++) {
-			Camera.getCameraInfo(i, cameraInfo);
-			if (cameraInfo.facing == CameraInfo.CAMERA_FACING_BACK) {
-				DEFAULT_CAMERA_ID = i;
-			}
-		}
-		mCamera = new ExtendedJavaCamera(this, DEFAULT_CAMERA_ID);
-		((RelativeLayout) findViewById(R.id.camera_layout)).addView(mCamera);
+        numberOfCameras = Camera.getNumberOfCameras();
 
-		((Button) findViewById(R.id.btnSwitch))
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						switchCamera();
-					}
-				});
-		((Button) findViewById(R.id.btnTaken))
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						takeImg();
-					}
-				});
+        // Find the ID of the default camera
+        CameraInfo cameraInfo = new CameraInfo();
+        for (int i = 0; i < numberOfCameras; i++) {
+            Camera.getCameraInfo(i, cameraInfo);
+            if (cameraInfo.facing == CameraInfo.CAMERA_FACING_BACK) {
+                DEFAULT_CAMERA_ID = i;
+            }
+        }
+        mCamera = new ExtendedJavaCamera(this, DEFAULT_CAMERA_ID);
+        ((RelativeLayout) findViewById(R.id.camera_layout)).addView(mCamera);
 
-		((Button) findViewById(R.id.btnFlashMode))
-				.setOnClickListener(new OnClickListener() {
-					private boolean isFlashOn = false;
-					@Override
-					public void onClick(View v) {
-						if(cameraCurrentlyLocked == DEFAULT_CAMERA_ID){
-							Parameters p = mCamera.getCurrentCamera()
-									.getParameters();
-							if (isFlashOn == false)
-								p.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-							else
-								p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-							mCamera.getCurrentCamera().setParameters(p);
-							isFlashOn = !isFlashOn;
-						}
-					}
-				});
+        ((Button) findViewById(R.id.btnSwitch))
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        switchCamera();
+                    }
+                });
+        ((Button) findViewById(R.id.btnTaken))
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        takeImg();
+                    }
+                });
 
-		((Button) findViewById(R.id.btnFaceDetect))
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						isOpenFaceDetection = !isOpenFaceDetection;
-						// (isOpenFaceDetection==false) ?
-						// mPreview.mCamera.startFaceDetection() :
-						// mPreview.mCamera.stopFaceDetection();
+        ((Button) findViewById(R.id.btnFlashMode))
+                .setOnClickListener(new OnClickListener() {
+                    private boolean isFlashOn = false;
 
-					}
-				});
-		this.snapshot = ((ImageView) findViewById(R.id.snapshot_img));
+                    @Override
+                    public void onClick(View v) {
+                        if (cameraCurrentlyLocked == DEFAULT_CAMERA_ID) {
+                            Parameters p = mCamera.getCurrentCamera()
+                                    .getParameters();
+                            if (isFlashOn == false)
+                                p.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+                            else
+                                p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                            mCamera.getCurrentCamera().setParameters(p);
+                            isFlashOn = !isFlashOn;
+                        }
+                    }
+                });
 
-		setMinFaceSize(0.2f);
-	}
+        ((Button) findViewById(R.id.btnFaceDetect))
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isOpenFaceDetection = !isOpenFaceDetection;
+                        // (isOpenFaceDetection==false) ?
+                        // mPreview.mCamera.startFaceDetection() :
+                        // mPreview.mCamera.stopFaceDetection();
 
-	private void setMinFaceSize(float faceSize) {
-		mRelativeFaceSize = faceSize;
-		mAbsoluteFaceSize = 0;
-	}
+                    }
+                });
+        this.snapshot = ((ImageView) findViewById(R.id.snapshot_img));
 
-	protected void takeImg() {
-		mCamera.getCurrentCamera().takePicture(null, null,
-				new PictureCallback() {
-					@Override
-					public void onPictureTaken(byte[] data, Camera camera) {
-						snapshot.setImageBitmap(BitmapFactory.decodeByteArray(
-								data, 0, data.length));
-						camera.startPreview();
-					}
-				});
-	}
+        setMinFaceSize(0.2f);
+    }
 
-	boolean replaceView(ViewGroup vg, View view, View replace_view) {
-		// vg.removeView(view);
-		vg.removeAllViews();
-		vg.addView(replace_view);
-		vg.requestLayout();
-		replace_view.forceLayout();
-		return true;
-	}
+    private void setMinFaceSize(float faceSize) {
+        mRelativeFaceSize = faceSize;
+        mAbsoluteFaceSize = 0;
+    }
 
-	protected void switchCamera() {
-		if (numberOfCameras == 1) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("only one camera").setNeutralButton("Close",
-					null);
-			AlertDialog alert = builder.create();
-			alert.show();
-			return;
-		}
+    protected void takeImg() {
+        mCamera.getCurrentCamera().takePicture(null, null,
+                new PictureCallback() {
+                    @Override
+                    public void onPictureTaken(byte[] data, Camera camera) {
+                        snapshot.setImageBitmap(BitmapFactory.decodeByteArray(
+                                data, 0, data.length));
+                        camera.startPreview();
+                    }
+                });
+    }
 
-		mCamera.disableView();
-		cameraCurrentlyLocked = (cameraCurrentlyLocked + 1) % numberOfCameras;
-		ExtendedJavaCamera nc = new ExtendedJavaCamera(this,
-				cameraCurrentlyLocked);
-		replaceView((ViewGroup) findViewById(R.id.camera_layout), mCamera, nc);
-		mCamera.setCvCameraViewListener(null);
-		mCamera = nc;
-		mCamera.enableView();
-		mCamera.setCvCameraViewListener(this);
-	}
+    boolean replaceView(ViewGroup vg, View view, View replace_view) {
+        // vg.removeView(view);
+        vg.removeAllViews();
+        vg.addView(replace_view);
+        vg.requestLayout();
+        replace_view.forceLayout();
+        return true;
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    protected void switchCamera() {
+        if (numberOfCameras == 1) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("only one camera").setNeutralButton("Close",
+                    null);
+            AlertDialog alert = builder.create();
+            alert.show();
+            return;
+        }
 
-		// Open the default i.e. the first rear facing camera.
-		cameraCurrentlyLocked = DEFAULT_CAMERA_ID;
-		mCamera.enableView();
-		mCamera.setCvCameraViewListener(this);
-	}
+        mCamera.disableView();
+        cameraCurrentlyLocked = (cameraCurrentlyLocked + 1) % numberOfCameras;
+        ExtendedJavaCamera nc = new ExtendedJavaCamera(this,
+                cameraCurrentlyLocked);
+        replaceView((ViewGroup) findViewById(R.id.camera_layout), mCamera, nc);
+        mCamera.setCvCameraViewListener(null);
+        mCamera = nc;
+        mCamera.enableView();
+        mCamera.setCvCameraViewListener(this);
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		// Because the Camera object is a shared resource, it's very
-		// important to release it when the activity is paused.
-		if (mCamera != null) {
-			mCamera.setCvCameraViewListener(null);
-			mCamera.disableView();
-		}
-	}
+        // Open the default i.e. the first rear facing camera.
+        cameraCurrentlyLocked = DEFAULT_CAMERA_ID;
+        mCamera.enableView();
+        mCamera.setCvCameraViewListener(this);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_main, menu);
-		return true;
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
 
-	@Override
-	public Mat onCameraFrame(Mat inputFrame) {
-		if (isOpenFaceDetection == true) {
-			inputFrame.copyTo(mRgba);
-			Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
-			int height = mGray.rows();
-			if (Math.round(height * mRelativeFaceSize) > 0) {
-				mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
-			}
-			mNativeDetector.setMinFaceSize(mAbsoluteFaceSize);
+        // Because the Camera object is a shared resource, it's very
+        // important to release it when the activity is paused.
+        if (mCamera != null) {
+            mCamera.setCvCameraViewListener(null);
+            mCamera.disableView();
+        }
+    }
 
-			MatOfRect faces = new MatOfRect();
-			// if (mDetectorType == JAVA_DETECTOR) {
-			if (mJavaDetector != null)
-				mJavaDetector.detectMultiScale(mGray, faces, 1.1,
-						2,
-						2, // TODO:
-							// objdetect.CV_HAAR_SCALE_IMAGE
-						new Size(mAbsoluteFaceSize, mAbsoluteFaceSize),
-						new Size());
-			/*
-			 * } else if (mDetectorType == NATIVE_DETECTOR) { if
-			 * (mNativeDetector != null) mNativeDetector.detect(mGray, faces); }
-			 * else { Log.e(TAG, "Detection method is not selected!"); }
-			 */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
+    }
 
-			Rect[] facesArray = faces.toArray();
-			Log.d(TAG, " main acitivity  face number = " + faces.size());
-			for (int i = 0; i < facesArray.length; i++)
-				Core.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(),
-						FACE_RECT_COLOR, 3);
-			return mRgba;
-		} else {
-			return inputFrame;
-		}
-	}
+    @Override
+    public Mat onCameraFrame(Mat inputFrame) {
+        if (isOpenFaceDetection == true) {
+            inputFrame.copyTo(mRgba);
+            Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
+            int height = mGray.rows();
+            if (Math.round(height * mRelativeFaceSize) > 0) {
+                mAbsoluteFaceSize = Math.round(height * mRelativeFaceSize);
+            }
+            mNativeDetector.setMinFaceSize(mAbsoluteFaceSize);
 
-	private static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0, 255);
+            MatOfRect faces = new MatOfRect();
+            // if (mDetectorType == JAVA_DETECTOR) {
+            if (mJavaDetector != null)
+                mJavaDetector.detectMultiScale(mGray, faces, 1.1,
+                        2,
+                        2, // TODO:
+                           // objdetect.CV_HAAR_SCALE_IMAGE
+                        new Size(mAbsoluteFaceSize, mAbsoluteFaceSize),
+                        new Size());
+            /*
+             * } else if (mDetectorType == NATIVE_DETECTOR) { if
+             * (mNativeDetector != null) mNativeDetector.detect(mGray, faces); }
+             * else { Log.e(TAG, "Detection method is not selected!"); }
+             */
 
-	@Override
-	public void onCameraViewStarted(int arg0, int arg1) {
-		mGray = new Mat();
-		mRgba = new Mat();
-		initFacedetector();
-	}
+            Rect[] facesArray = faces.toArray();
+            Log.d(TAG, " main acitivity  face number = " + faces.size());
+            for (int i = 0; i < facesArray.length; i++)
+                Core.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(),
+                        FACE_RECT_COLOR, 3);
+            return mRgba;
+        } else {
+            return inputFrame;
+        }
+    }
 
-	private File mCascadeFile;
-	private CascadeClassifier mJavaDetector;
-	private DetectionBasedTracker mNativeDetector;
+    private static final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0, 255);
 
-	private void initFacedetector() {
-		try {
-			// load cascade file from application resources
-			InputStream is = getResources().openRawResource(
-					R.raw.lbpcascade_frontalface);
-			File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
-			mCascadeFile = new File(cascadeDir, "lbpcascade_frontalface.xml");
-			FileOutputStream os = new FileOutputStream(mCascadeFile);
+    @Override
+    public void onCameraViewStarted(int arg0, int arg1) {
+        mGray = new Mat();
+        mRgba = new Mat();
+        initFacedetector();
+    }
 
-			byte[] buffer = new byte[4096];
-			int bytesRead;
-			while ((bytesRead = is.read(buffer)) != -1) {
-				os.write(buffer, 0, bytesRead);
-			}
-			is.close();
-			os.close();
+    private File mCascadeFile;
+    private CascadeClassifier mJavaDetector;
+    private DetectionBasedTracker mNativeDetector;
 
-			mJavaDetector = new CascadeClassifier(
-					mCascadeFile.getAbsolutePath());
-			if (mJavaDetector.empty()) {
-				Log.e(TAG, "Failed to load cascade classifier");
-				mJavaDetector = null;
-			} else
-				Log.i(TAG,
-						"Loaded cascade classifier from "
-								+ mCascadeFile.getAbsolutePath());
+    private void initFacedetector() {
+        try {
+            // load cascade file from application resources
+            InputStream is = getResources().openRawResource(
+                    R.raw.lbpcascade_frontalface);
+            File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
+            mCascadeFile = new File(cascadeDir, "lbpcascade_frontalface.xml");
+            FileOutputStream os = new FileOutputStream(mCascadeFile);
 
-			mNativeDetector = new DetectionBasedTracker(
-					mCascadeFile.getAbsolutePath(), 0);
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            is.close();
+            os.close();
 
-			cascadeDir.delete();
+            mJavaDetector = new CascadeClassifier(
+                    mCascadeFile.getAbsolutePath());
+            if (mJavaDetector.empty()) {
+                Log.e(TAG, "Failed to load cascade classifier");
+                mJavaDetector = null;
+            } else
+                Log.i(TAG,
+                        "Loaded cascade classifier from "
+                                + mCascadeFile.getAbsolutePath());
 
-		} catch (IOException e) {
-			e.printStackTrace();
-			Log.e(TAG, "Failed to load cascade. Exception thrown: " + e);
-		}
-	}
+            mNativeDetector = new DetectionBasedTracker(
+                    mCascadeFile.getAbsolutePath(), 0);
 
-	@Override
-	public void onCameraViewStopped() {
-		mGray.release();
-		mRgba.release();
-	}
+            cascadeDir.delete();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "Failed to load cascade. Exception thrown: " + e);
+        }
+    }
+
+    @Override
+    public void onCameraViewStopped() {
+        mGray.release();
+        mRgba.release();
+    }
 
 }
