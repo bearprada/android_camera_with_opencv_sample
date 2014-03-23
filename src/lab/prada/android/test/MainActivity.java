@@ -38,11 +38,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-public class MainActivity extends Activity implements CvCameraViewListener {
+import com.androidquery.AQuery;
+
+public class MainActivity extends Activity implements CvCameraViewListener, OnClickListener {
     private static final String TAG = "test";
 
     static {
@@ -54,18 +54,17 @@ public class MainActivity extends Activity implements CvCameraViewListener {
      * private Preview mPreview; private Camera mCamera;
      */
     private int numberOfCameras;
-    private int DEFAULT_CAMERA_ID;
+    private int defaultCameraId;
     private int cameraCurrentlyLocked;
-    private ImageView snapshot;
     protected boolean isOpenFaceDetection;
     private ExtendedJavaCamera mCamera;
     private Mat mGray;
     private Mat mRgba;
     private int mAbsoluteFaceSize = 0;
     private float mRelativeFaceSize;
-    private SurfaceView mSubSurfaceView;
     private SurfaceHolder mSubHolder;
     private Bitmap mCacheBitmap;
+    private AQuery aQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,81 +79,40 @@ public class MainActivity extends Activity implements CvCameraViewListener {
 
         numberOfCameras = Camera.getNumberOfCameras();
 
+        defaultCameraId = findDefaultCameraId();
+        mCamera = new ExtendedJavaCamera(this, defaultCameraId);
+
+        ((RelativeLayout) findViewById(R.id.camera_layout)).addView(mCamera);
+
+        aQuery = new AQuery(this);
+        aQuery.find(R.id.btnSwitch).clicked(this);
+        aQuery.find(R.id.btnTaken).clicked(this);
+        aQuery.find(R.id.btnFlashMode).clicked(this);
+        aQuery.find(R.id.btnFaceDetect).clicked(this);
+
+        mSubHolder = ((SurfaceView)aQuery.find(R.id.my_surface_view).getView()).getHolder();
+        mSubHolder.addCallback(new Callback() {
+            @Override
+            public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) { }
+            @Override
+            public void surfaceCreated(SurfaceHolder arg0) { }
+            @Override
+            public void surfaceDestroyed(SurfaceHolder arg0) { }
+        });
+
+        setMinFaceSize(0.2f);
+    }
+
+    private int findDefaultCameraId() {
         // Find the ID of the default camera
         CameraInfo cameraInfo = new CameraInfo();
         for (int i = 0; i < numberOfCameras; i++) {
             Camera.getCameraInfo(i, cameraInfo);
             if (cameraInfo.facing == CameraInfo.CAMERA_FACING_BACK) {
-                DEFAULT_CAMERA_ID = i;
+                return i;
             }
         }
-        mCamera = new ExtendedJavaCamera(this, DEFAULT_CAMERA_ID);
-        ((RelativeLayout) findViewById(R.id.camera_layout)).addView(mCamera);
-
-        ((Button) findViewById(R.id.btnSwitch))
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        switchCamera();
-                    }
-                });
-        ((Button) findViewById(R.id.btnTaken))
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        takeImg();
-                    }
-                });
-
-        ((Button) findViewById(R.id.btnFlashMode))
-                .setOnClickListener(new OnClickListener() {
-                    private boolean isFlashOn = false;
-
-                    @Override
-                    public void onClick(View v) {
-                        if (cameraCurrentlyLocked == DEFAULT_CAMERA_ID) {
-                            Parameters p = mCamera.getCurrentCamera()
-                                    .getParameters();
-                            if (isFlashOn == false)
-                                p.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-                            else
-                                p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                            mCamera.getCurrentCamera().setParameters(p);
-                            isFlashOn = !isFlashOn;
-                        }
-                    }
-                });
-
-        ((Button) findViewById(R.id.btnFaceDetect))
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isOpenFaceDetection = !isOpenFaceDetection;
-                        // (isOpenFaceDetection==false) ?
-                        // mPreview.mCamera.startFaceDetection() :
-                        // mPreview.mCamera.stopFaceDetection();
-
-                    }
-                });
-        this.snapshot = ((ImageView) findViewById(R.id.snapshot_img));
-
-        mSubSurfaceView = (SurfaceView)findViewById(R.id.my_surface_view);
-        mSubHolder = mSubSurfaceView.getHolder();
-        mSubHolder.addCallback(new Callback() {
-            @Override
-            public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
-            }
-
-            @Override
-            public void surfaceCreated(SurfaceHolder arg0) {
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder arg0) {
-            }
-        });
-
-        setMinFaceSize(0.2f);
+        return 0;
     }
 
     private void setMinFaceSize(float faceSize) {
@@ -162,19 +120,19 @@ public class MainActivity extends Activity implements CvCameraViewListener {
         mAbsoluteFaceSize = 0;
     }
 
-    protected void takeImg() {
+    protected void takeCameraPicture() {
         mCamera.getCurrentCamera().takePicture(null, null,
-                new PictureCallback() {
-                    @Override
-                    public void onPictureTaken(byte[] data, Camera camera) {
-                        snapshot.setImageBitmap(BitmapFactory.decodeByteArray(
-                                data, 0, data.length));
-                        camera.startPreview();
-                    }
-                });
+            new PictureCallback() {
+                @Override
+                public void onPictureTaken(byte[] data, Camera camera) {
+                    aQuery.find(R.id.snapshot_img).image(
+                            BitmapFactory.decodeByteArray(data, 0, data.length));
+                    camera.startPreview();
+                }
+            });
     }
 
-    boolean replaceView(ViewGroup vg, View view, View replace_view) {
+    private boolean replaceView(ViewGroup vg, View view, View replace_view) {
         vg.removeAllViews();
         vg.addView(replace_view);
         vg.requestLayout();
@@ -182,7 +140,7 @@ public class MainActivity extends Activity implements CvCameraViewListener {
         return true;
     }
 
-    protected void switchCamera() {
+    private void switchCamera() {
         if (numberOfCameras == 1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("only one camera").setNeutralButton("Close",
@@ -194,11 +152,12 @@ public class MainActivity extends Activity implements CvCameraViewListener {
 
         mCamera.disableView();
         cameraCurrentlyLocked = (cameraCurrentlyLocked + 1) % numberOfCameras;
-        ExtendedJavaCamera nc = new ExtendedJavaCamera(this,
+        // FIXME find out another way to switch camera
+        ExtendedJavaCamera newCamera = new ExtendedJavaCamera(this,
                 cameraCurrentlyLocked);
-        replaceView((ViewGroup) findViewById(R.id.camera_layout), mCamera, nc);
+        replaceView((ViewGroup) findViewById(R.id.camera_layout), mCamera, newCamera);
         mCamera.setCvCameraViewListener(null);
-        mCamera = nc;
+        mCamera = newCamera;
         mCamera.enableView();
         mCamera.setCvCameraViewListener(this);
     }
@@ -208,7 +167,7 @@ public class MainActivity extends Activity implements CvCameraViewListener {
         super.onResume();
 
         // Open the default i.e. the first rear facing camera.
-        cameraCurrentlyLocked = DEFAULT_CAMERA_ID;
+        cameraCurrentlyLocked = defaultCameraId;
         mCamera.enableView();
         mCamera.setCvCameraViewListener(this);
     }
@@ -306,6 +265,7 @@ public class MainActivity extends Activity implements CvCameraViewListener {
     private File mCascadeFile;
     private CascadeClassifier mJavaDetector;
     private DetectionBasedTracker mNativeDetector;
+    private boolean isFlashOn = false;
 
     private void initFacedetector() {
         try {
@@ -349,6 +309,33 @@ public class MainActivity extends Activity implements CvCameraViewListener {
     public void onCameraViewStopped() {
         mGray.release();
         mRgba.release();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+        case R.id.btnFaceDetect:
+            isOpenFaceDetection = !isOpenFaceDetection;
+            break;
+        case R.id.btnFlashMode:
+            if (cameraCurrentlyLocked == defaultCameraId) {
+                Parameters p = mCamera.getCurrentCamera()
+                        .getParameters();
+                if (isFlashOn  == false)
+                    p.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+                else
+                    p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                mCamera.getCurrentCamera().setParameters(p);
+                isFlashOn = !isFlashOn;
+            }
+            break;
+        case R.id.btnSwitch:
+            switchCamera();
+            break;
+        case R.id.btnTaken:
+            takeCameraPicture();
+            break;
+        }
     }
 
 }
