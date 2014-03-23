@@ -19,7 +19,7 @@ import android.view.ViewGroup;
  * to the surface. We need to center the SurfaceView because not all devices have cameras that
  * support preview sizes at the same aspect ratio as the device's display.
  */
-public class Preview extends ViewGroup implements SurfaceHolder.Callback/*, FaceDetectionListener*/, PreviewCallback {
+public class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallback {
     private final String TAG = "Preview";
 
     SurfaceView mSurfaceView;
@@ -28,7 +28,7 @@ public class Preview extends ViewGroup implements SurfaceHolder.Callback/*, Face
     List<Size> mSupportedPreviewSizes;
     Camera mCamera;
 
-	private byte[] mBuffer;
+    private byte[] mBuffer;
 
     Preview(Context context) {
         super(context);
@@ -44,9 +44,7 @@ public class Preview extends ViewGroup implements SurfaceHolder.Callback/*, Face
     }
 
     public void setCamera(Camera camera) {
-    	
         mCamera = camera;
-        
         if (mCamera != null) {
             mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
              Parameters p = mCamera.getParameters();
@@ -64,20 +62,6 @@ public class Preview extends ViewGroup implements SurfaceHolder.Callback/*, Face
             //mCamera.setFaceDetectionListener(this);
             requestLayout();
         }
-    }
-
-    public void switchCamera(Camera camera) {
-       setCamera(camera);
-       try {
-           camera.setPreviewDisplay(mHolder);
-       } catch (IOException exception) {
-           Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
-       }
-       Camera.Parameters parameters = camera.getParameters();
-      // parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-       requestLayout();
-
-       camera.setParameters(parameters);
     }
 
     @Override
@@ -141,7 +125,6 @@ public class Preview extends ViewGroup implements SurfaceHolder.Callback/*, Face
         }
     }
 
-
     private Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
         double targetRatio = (double) w / h;
@@ -186,15 +169,9 @@ public class Preview extends ViewGroup implements SurfaceHolder.Callback/*, Face
         mCamera.startPreview();
     }
 
-	@Override
-	public void onPreviewFrame(byte[] arg0, Camera arg1) {
-		 if (mCamera != null)
-	          mCamera.addCallbackBuffer(mBuffer);
-	}
-
-	/*@Override
-	public void onFaceDetection(Face[] faces, Camera camera) {
-		if(faces.length>0) Log.d("test" , "[onFaceDetection] faces : "+faces.length);
-	}*/
-
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        if (camera != null)
+            camera.addCallbackBuffer(mBuffer);
+    }
 }

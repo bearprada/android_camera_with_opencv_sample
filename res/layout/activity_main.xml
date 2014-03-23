@@ -55,4 +55,10 @@
         android:layout_alignParentTop="true"
         android:src="@drawable/ic_launcher" />
 
+    <SurfaceView
+        android:id="@+id/my_surface_view"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

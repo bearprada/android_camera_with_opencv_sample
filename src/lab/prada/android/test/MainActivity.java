@@ -6,27 +6,33 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.samples.facedetect.DetectionBasedTracker;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
 import android.util.Log;
 import android.view.Menu;
+import android.view.SurfaceHolder;
+import android.view.SurfaceHolder.Callback;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -42,8 +48,8 @@ public class MainActivity extends Activity implements CvCameraViewListener {
     static {
         System.loadLibrary("opencv_java");
         System.loadLibrary("detection_based_tracker");
-
     }
+
     /*
      * private Preview mPreview; private Camera mCamera;
      */
@@ -57,6 +63,9 @@ public class MainActivity extends Activity implements CvCameraViewListener {
     private Mat mRgba;
     private int mAbsoluteFaceSize = 0;
     private float mRelativeFaceSize;
+    private SurfaceView mSubSurfaceView;
+    private SurfaceHolder mSubHolder;
+    private Bitmap mCacheBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +78,10 @@ public class MainActivity extends Activity implements CvCameraViewListener {
         // and set it as the content of our activity.
         this.setContentView(R.layout.activity_main);
 
-        /*
-         * mPreview = new Preview(this); RelativeLayout.LayoutParams layout =
-         * new
-         * RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,
-         * RelativeLayout.LayoutParams.FILL_PARENT);
-         * mPreview.setLayoutParams(layout);
-         */
+//      mPreview = new Preview(this); RelativeLayout.LayoutParams layout = new
+//              RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,
+//              RelativeLayout.LayoutParams.FILL_PARENT);
+//      mPreview.setLayoutParams(layout);
 
         numberOfCameras = Camera.getNumberOfCameras();
 
@@ -136,6 +142,22 @@ public class MainActivity extends Activity implements CvCameraViewListener {
                     }
                 });
         this.snapshot = ((ImageView) findViewById(R.id.snapshot_img));
+
+        mSubSurfaceView = (SurfaceView)findViewById(R.id.my_surface_view);
+        mSubHolder = mSubSurfaceView.getHolder();
+        mSubHolder.addCallback(new Callback() {
+            @Override
+            public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
+            }
+
+            @Override
+            public void surfaceCreated(SurfaceHolder arg0) {
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder arg0) {
+            }
+        });
 
         setMinFaceSize(0.2f);
     }
@@ -218,6 +240,7 @@ public class MainActivity extends Activity implements CvCameraViewListener {
 
     @Override
     public Mat onCameraFrame(Mat inputFrame) {
+        drawOnSubSurface(inputFrame);
         if (isOpenFaceDetection == true) {
             inputFrame.copyTo(mRgba);
             Imgproc.cvtColor(inputFrame, mGray, Imgproc.COLOR_RGBA2GRAY);
@@ -242,7 +265,8 @@ public class MainActivity extends Activity implements CvCameraViewListener {
              * else { Log.e(TAG, "Detection method is not selected!"); }
              */
 
-            Rect[] facesArray = faces.toArray();
+            
+            org.opencv.core.Rect[] facesArray = faces.toArray();
             Log.d(TAG, " main acitivity  face number = " + faces.size());
             for (int i = 0; i < facesArray.length; i++)
                 Core.rectangle(mRgba, facesArray[i].tl(), facesArray[i].br(),
@@ -250,6 +274,29 @@ public class MainActivity extends Activity implements CvCameraViewListener {
             return mRgba;
         } else {
             return inputFrame;
+        }
+    }
+
+    private void drawOnSubSurface(Mat inputFrame) {
+        if (mCacheBitmap == null) {
+            Parameters params = mCamera.getCurrentCamera().getParameters();
+            int frameWidth = params.getPreviewSize().width;
+            int frameHeight = params.getPreviewSize().height;
+            mCacheBitmap = Bitmap.createBitmap(frameWidth, frameHeight, Bitmap.Config.ARGB_8888);
+        }
+        Utils.matToBitmap(inputFrame, mCacheBitmap);
+        if (mCacheBitmap != null) {
+            Canvas canvas = mSubHolder.lockCanvas();
+            if (canvas != null) {
+                canvas.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR);
+                Rect src = new Rect(0, 0, mCacheBitmap.getWidth(), mCacheBitmap.getHeight());
+                Rect dst = new Rect((canvas.getWidth() - mCacheBitmap.getWidth()) / 2,
+                        (canvas.getHeight() - mCacheBitmap.getHeight()) / 2,
+                        (canvas.getWidth() - mCacheBitmap.getWidth()) / 2 + mCacheBitmap.getWidth(),
+                        (canvas.getHeight() - mCacheBitmap.getHeight()) / 2 + mCacheBitmap.getHeight()); 
+                canvas.drawBitmap(mCacheBitmap, src, dst, null);
+                mSubHolder.unlockCanvasAndPost(canvas);
+            }
         }
     }
 
