@@ -78,11 +78,6 @@ public class MainActivity extends Activity implements CvCameraViewListener {
         // and set it as the content of our activity.
         this.setContentView(R.layout.activity_main);
 
-//      mPreview = new Preview(this); RelativeLayout.LayoutParams layout = new
-//              RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT,
-//              RelativeLayout.LayoutParams.FILL_PARENT);
-//      mPreview.setLayoutParams(layout);
-
         numberOfCameras = Camera.getNumberOfCameras();
 
         // Find the ID of the default camera
@@ -180,7 +175,6 @@ public class MainActivity extends Activity implements CvCameraViewListener {
     }
 
     boolean replaceView(ViewGroup vg, View view, View replace_view) {
-        // vg.removeView(view);
         vg.removeAllViews();
         vg.addView(replace_view);
         vg.requestLayout();
