@@ -66,4 +66,11 @@ public class SubSurfaceView extends SurfaceView implements OnCameraFrameListener
     public void onFrame(Mat inputFrame) {
         attachBuffer(inputFrame);
     }
+
+    public void drawLastCache(Canvas canvas) {
+        if (mCacheBitmap != null) {
+            canvas.drawBitmap(mCacheBitmap, getLeft(), getTop(), null);
+        }
+        
+    }
 }

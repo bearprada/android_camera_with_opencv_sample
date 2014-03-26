@@ -1,9 +1,14 @@
 package lab.prada.android.test;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -12,6 +17,18 @@ public class Utils {
     private static int sScreenWidth = 0;
     private static int sScreenHeight = 0;
     private static Context sApplicationContext;
+
+    // Executors
+    public static Executor sUiThreadExecutor = new Executor() {
+
+        @Override
+        public void execute(Runnable command) {
+            new Handler(Looper.getMainLooper()).post(command);
+        }
+        
+    };
+
+    public static Executor sBackgroundExecutor = Executors.newCachedThreadPool();
 
     public static void setApplicationContext(Context applicationContext) {
         sApplicationContext = applicationContext;
