@@ -1,8 +1,5 @@
 package lab.prada.android.test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 
@@ -13,7 +10,6 @@ import org.opencv.samples.facedetect.FaceDetector;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.hardware.Camera;
@@ -21,7 +17,6 @@ import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,7 +31,7 @@ import bolts.Task;
 
 import com.androidquery.AQuery;
 
-public class MainActivity extends Activity implements CvCameraViewListener, OnClickListener {
+public class CameraActivity extends Activity implements CvCameraViewListener, OnClickListener {
 
     static {
         System.loadLibrary("opencv_java");
@@ -243,18 +238,18 @@ public class MainActivity extends Activity implements CvCameraViewListener, OnCl
             Task.callInBackground(new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
-                    saveToFile(bm);
+                    GalleryManager.getInstance().saveToFile(bm);
                     return null;
                 }
             }).continueWith(new Continuation<Void, Void>() {
                 @Override
                 public Void then(Task<Void> task) throws Exception {
                     if (task.isFaulted()) {
-                        Toast.makeText(MainActivity.this, "error " + task.getError(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(CameraActivity.this, "error " + task.getError(), Toast.LENGTH_LONG).show();
                         task.getError().printStackTrace();
                     }
                     if (task.isCompleted()) {
-                        Toast.makeText(MainActivity.this, "save finish", Toast.LENGTH_LONG).show();
+                        Toast.makeText(CameraActivity.this, "save finish", Toast.LENGTH_LONG).show();
                     }
                     return null;
                 }
@@ -272,10 +267,4 @@ public class MainActivity extends Activity implements CvCameraViewListener, OnCl
         }
         return bitmap;
     }
-
-    private void saveToFile(Bitmap bm) throws FileNotFoundException {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "test.jpg");
-        bm.compress(CompressFormat.JPEG, 90, new FileOutputStream(file));
-    }
-
 }

@@ -6,11 +6,11 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 
 class MyListAdapter extends BaseAdapter {
-    private MainActivity mActivity;
+    private CameraActivity mActivity;
     private final int mItemWidth;
     private final int mItemHeight;
 
-    public MyListAdapter(MainActivity activity) {
+    public MyListAdapter(CameraActivity activity) {
         mActivity = activity;
         mItemWidth = Utils.getScreenWidth(activity) / 3;
         mItemHeight = Utils.getScreenHeight(activity) / 6;

@@ -1,6 +1,6 @@
 package lab.prada.android.test;
 
-import lab.prada.android.test.MainActivity.OnCameraFrameListener;
+import lab.prada.android.test.CameraActivity.OnCameraFrameListener;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
