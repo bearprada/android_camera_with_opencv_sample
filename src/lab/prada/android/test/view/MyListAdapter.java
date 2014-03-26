@@ -1,11 +1,13 @@
-package lab.prada.android.test;
+package lab.prada.android.test.view;
 
+import lab.prada.android.test.CameraActivity;
+import lab.prada.android.test.Utils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 
-class MyListAdapter extends BaseAdapter {
+public class MyListAdapter extends BaseAdapter {
     private CameraActivity mActivity;
     private final int mItemWidth;
     private final int mItemHeight;

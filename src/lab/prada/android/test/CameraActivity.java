@@ -3,6 +3,10 @@ package lab.prada.android.test;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 
+import lab.prada.android.test.view.MyListAdapter;
+import lab.prada.android.test.view.SubImageView;
+import lab.prada.android.test.view.SubSurfaceView;
+
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener;
 import org.opencv.core.Mat;
 import org.opencv.samples.facedetect.FaceDetector;
@@ -60,17 +64,27 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
 
         // Create a RelativeLayout container that will hold a SurfaceView,
         // and set it as the content of our activity.
-        setContentView(R.layout.activity_main_2);
+        setContentView(R.layout.activity_main_3);
 
         numberOfCameras = Camera.getNumberOfCameras();
         defaultCameraId = findDefaultCameraId();
         mCamera = new ExtendedJavaCamera(this, defaultCameraId);
-        mCamera.setMaxFrameSize(240, 240);
+        mCamera.setMaxFrameSize(480, 480);
         ((ViewGroup)findViewById(R.id.root)).addView(mCamera, 0);
 
-        iniViews2();
+        iniViews3();
 
         mFaceDetector = new FaceDetector(this);
+    }
+
+    private void iniViews3() {
+        aQuery = new AQuery(this);
+        aQuery.find(R.id.btn_camera).clicked(this);
+        ViewGroup vg = (ViewGroup) findViewById(R.id.sub_container);
+        for (int i = 0 ; i < vg.getChildCount() ; i++) {
+            SubImageView ssv = (SubImageView) vg.getChildAt(i);
+            addListener(ssv);
+        }
     }
 
     private void iniViews2() {
@@ -233,7 +247,7 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
             takeCameraPicture();
             break;
         case R.id.btn_camera:
-            final Bitmap bm = getScreenShot();
+            final Bitmap bm = getScreenShot2();
             aQuery.find(R.id.image_screenshot).image(bm);
             Task.callInBackground(new Callable<Void>() {
                 @Override
@@ -265,6 +279,19 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
             SubSurfaceView sv = (SubSurfaceView)mGridView.getChildAt(i);
             sv.drawLastCache(canvas);
         }
+        return bitmap;
+    }
+
+    private Bitmap getScreenShot2() {
+        ViewGroup view = (ViewGroup) findViewById(R.id.sub_container);
+        view.buildDrawingCache();
+        Bitmap bitmap = view.getDrawingCache();
+//        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.RGB_565);
+//        Canvas canvas = new Canvas(bitmap);
+//        for (int i = 0 ; i < view.getChildCount() ; i++) {
+//            SubImageView sv = (SubImageView)view.getChildAt(i);
+//            sv.drawLastCache(canvas);
+//        }
         return bitmap;
     }
 }
