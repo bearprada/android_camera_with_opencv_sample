@@ -29,13 +29,14 @@ public class GalleryManager {
     }
 
     public File saveToFile(Bitmap bm) throws FileNotFoundException {
-        String fileName = UUID.randomUUID().toString();
-        File file = new File(mRoot, fileName + ".jpg");
+        String fileName = System.currentTimeMillis() + ".jpg";
+        File file = new File(mRoot, fileName);
         bm.compress(CompressFormat.JPEG, 90, new FileOutputStream(file));
         return file;
     }
 
     public File[] getFiles() {
+        // TODO sort this by created time
         return mRoot.listFiles();
     }
 }

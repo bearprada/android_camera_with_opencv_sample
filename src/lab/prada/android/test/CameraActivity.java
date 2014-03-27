@@ -1,5 +1,6 @@
 package lab.prada.android.test;
 
+import java.io.IOException;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 
@@ -13,9 +14,13 @@ import org.opencv.samples.facedetect.FaceDetector;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Shader.TileMode;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
@@ -54,6 +59,7 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
     private Vector<OnCameraFrameListener> mListener = new Vector<OnCameraFrameListener>();
     private FaceDetector mFaceDetector;
     private GridView mGridView;
+    private BackgroundManager mBackgroundMgr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +81,20 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
         iniViews3();
 
         mFaceDetector = new FaceDetector(this);
+        mBackgroundMgr = BackgroundManager.getInstance(this);
+
+        try {
+            doSetBackground(mBackgroundMgr.getBackground(0));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void iniViews3() {
         aQuery = new AQuery(this);
         aQuery.find(R.id.btn_camera).clicked(this);
+        aQuery.find(R.id.btn_next).clicked(this);
+        aQuery.find(R.id.btn_prev).clicked(this);
         ViewGroup vg = (ViewGroup) findViewById(R.id.sub_container);
         for (int i = 0 ; i < vg.getChildCount() ; i++) {
             SubImageView ssv = (SubImageView) vg.getChildAt(i);
@@ -119,6 +134,72 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
             }
         }
         return 0;
+    }
+
+    private static class BackgroundManager {
+        private static BackgroundManager instance;
+        private final String[] mBackgrounds;
+        private final static String PREFIX = "backgrounds";
+        public static BackgroundManager getInstance(Context ctx) {
+            if (instance == null) { 
+                instance = new BackgroundManager(ctx);
+            }
+            return instance;
+        }
+
+        private BackgroundManager(Context ctx) {
+            String[] s = null;
+            try {
+                s = ctx.getAssets().list(PREFIX);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mBackgrounds = s;
+        }
+
+        public String getBackground(int index) {
+            return PREFIX + "/" + mBackgrounds[index];
+        }
+
+        public int getTotalNumber() {
+            return mBackgrounds == null ? 0 : mBackgrounds.length;
+        }
+    }
+
+    private int currentBackgroundIdx = 0;
+    private void prevBackground() {
+        try {
+            doSetBackground(mBackgroundMgr.getBackground(getPrevIdx()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void doSetBackground(String background) throws IOException {
+        BitmapDrawable drawable = (BitmapDrawable) BitmapDrawable.createFromStream(
+                getAssets().open(background), background);
+        drawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
+        findViewById(R.id.sub_container).setBackgroundDrawable(drawable);
+    }
+
+    private int getPrevIdx() {
+        if (currentBackgroundIdx > 0)
+            currentBackgroundIdx--;
+        return currentBackgroundIdx;
+    }
+
+    private int getNextIdx() {
+        if (currentBackgroundIdx < mBackgroundMgr.getTotalNumber())
+            currentBackgroundIdx++;
+        return currentBackgroundIdx;
+    }
+    
+    private void nextBackground() {
+        try {
+            doSetBackground(mBackgroundMgr.getBackground(getNextIdx()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addListener(OnCameraFrameListener listener) {
@@ -245,6 +326,12 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
             break;
         case R.id.btnTaken:
             takeCameraPicture();
+            break;
+        case R.id.btn_next:
+            nextBackground();
+            break;
+        case R.id.btn_prev:
+            prevBackground();
             break;
         case R.id.btn_camera:
             final Bitmap bm = getScreenShot2();

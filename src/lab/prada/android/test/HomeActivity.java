@@ -13,6 +13,7 @@ import android.widget.ListView;
 
 public class HomeActivity extends Activity {
 
+    protected static final int AR_FINISH_CAMERA = 1;
     private ListView mListView;
     private GalleryAdapter mAdapter;
     private GalleryManager mGalleryMgr;
@@ -29,12 +30,17 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(HomeActivity.this, CameraActivity.class);
-                HomeActivity.this.startActivity(intent);
+                HomeActivity.this.startActivityForResult(intent, AR_FINISH_CAMERA);
             }
         });
         mListView.addHeaderView(button);
         mListView.setAdapter(mAdapter);
         mGalleryMgr = GalleryManager.getInstance();
+        refreshData();
+    }
+
+    private void refreshData() {
+        mAdapter.clear();
         mAdapter.addAll(mGalleryMgr.getFiles());
         mAdapter.notifyDataSetChanged();
     }
@@ -49,11 +55,17 @@ public class HomeActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem menu) {
         switch (menu.getItemId()) {
         case R.id.menu_refresh:
-            mAdapter.clear();
-            mAdapter.addAll(mGalleryMgr.getFiles());
-            mAdapter.notifyDataSetChanged();
+            refreshData();
             break;
         }
         return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+        case AR_FINISH_CAMERA:
+            refreshData();
+        }
     }
 }

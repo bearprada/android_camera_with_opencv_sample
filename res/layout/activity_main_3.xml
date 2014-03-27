@@ -3,7 +3,7 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CameraActivity" >
+    android:background="#000000" >
 
     <RelativeLayout
         android:id="@+id/sub_container"
@@ -115,13 +115,13 @@
         android:layout_centerInParent="true" />
     </RelativeLayout>
 
-    
     <ImageButton
         android:id="@+id/btn_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
         android:src="@drawable/btn_camera" />
 
     <ImageView
@@ -130,4 +130,23 @@
         android:layout_height="100dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true" />
+
+    <ImageButton
+        android:id="@+id/btn_prev"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/abs__ic_ab_back_holo_light" />
+
+    <ImageButton
+        android:id="@+id/btn_next"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/abs__ic_ab_back_holo_light" />
+    
 </RelativeLayout>
