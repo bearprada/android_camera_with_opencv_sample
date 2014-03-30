@@ -1,0 +1,27 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:flatui="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <com.cengalabs.flatui.views.FlatButton
+        android:id="@+id/btn_create_circle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Circle"
+        android:layout_weight="1"
+        android:layout_margin="3dp"
+        flatui:textAppearance="light" />
+
+    <com.cengalabs.flatui.views.FlatButton
+        android:id="@+id/btn_create_grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Grid"
+        android:layout_weight="1"
+        android:layout_margin="3dp"
+        flatui:textAppearance="light" />
+
+</LinearLayout>

@@ -1,14 +1,10 @@
 package lab.prada.android.test.view;
 
-import java.util.concurrent.Callable;
-
-import lab.prada.android.test.CameraActivity.OnCameraFrameListener;
+import lab.prada.android.test.BaseCameraActivity.OnCameraFrameListener;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-
-import bolts.Task;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,7 +12,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.SurfaceView;
 
@@ -66,7 +61,6 @@ public class SubSurfaceView extends SurfaceView implements OnCameraFrameListener
                 Rect src = new Rect(0, 0, mCacheBitmap.getWidth(), mCacheBitmap.getHeight());
                 Rect dst = new Rect(0, 0, getWidth(), getHeight()); 
                 canvas.drawBitmap(mCacheBitmap, src, dst, null);
-                canvas.rotate(30);
                 canvas.drawRect(new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), testBgPaint);
                 this.getHolder().unlockCanvasAndPost(canvas);
             }
@@ -82,6 +76,5 @@ public class SubSurfaceView extends SurfaceView implements OnCameraFrameListener
         if (mCacheBitmap != null) {
             canvas.drawBitmap(mCacheBitmap, getLeft(), getTop(), null);
         }
-        
     }
 }

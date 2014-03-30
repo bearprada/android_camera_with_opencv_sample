@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 
-import lab.prada.android.test.view.MyListAdapter;
-import lab.prada.android.test.view.SubImageView;
-import lab.prada.android.test.view.SubSurfaceView;
-
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener;
 import org.opencv.core.Mat;
 import org.opencv.samples.facedetect.FaceDetector;
@@ -17,10 +13,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
@@ -32,15 +26,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.GridView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 import bolts.Continuation;
 import bolts.Task;
 
 import com.androidquery.AQuery;
 
-public class CameraActivity extends Activity implements CvCameraViewListener, OnClickListener {
+public abstract class BaseCameraActivity extends Activity implements CvCameraViewListener, OnClickListener {
 
     static {
         System.loadLibrary("opencv_java");
@@ -54,11 +46,10 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
     private boolean isOpenFaceDetection;
     private boolean isFlashOn = false;
 
-    private AQuery aQuery;
+    protected AQuery aQuery;
     private ExtendedJavaCamera mCamera;
     private Vector<OnCameraFrameListener> mListener = new Vector<OnCameraFrameListener>();
     private FaceDetector mFaceDetector;
-    private GridView mGridView;
     private BackgroundManager mBackgroundMgr;
 
     @Override
@@ -70,7 +61,7 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
 
         // Create a RelativeLayout container that will hold a SurfaceView,
         // and set it as the content of our activity.
-        setContentView(R.layout.activity_main_3);
+        setContentView(getContentViewId());
 
         numberOfCameras = Camera.getNumberOfCameras();
         defaultCameraId = findDefaultCameraId();
@@ -78,7 +69,13 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
         mCamera.setMaxFrameSize(480, 480);
         ((ViewGroup)findViewById(R.id.root)).addView(mCamera, 0);
 
-        iniViews3();
+        aQuery = new AQuery(this);
+        // initial the common UI components
+        aQuery.find(R.id.btn_camera).clicked(this);
+        aQuery.find(R.id.btn_next).clicked(this);
+        aQuery.find(R.id.btn_prev).clicked(this);
+
+        initView();
 
         mFaceDetector = new FaceDetector(this);
         mBackgroundMgr = BackgroundManager.getInstance(this);
@@ -90,39 +87,13 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
         }
     }
 
-    private void iniViews3() {
-        aQuery = new AQuery(this);
-        aQuery.find(R.id.btn_camera).clicked(this);
-        aQuery.find(R.id.btn_next).clicked(this);
-        aQuery.find(R.id.btn_prev).clicked(this);
-        ViewGroup vg = (ViewGroup) findViewById(R.id.sub_container);
-        for (int i = 0 ; i < vg.getChildCount() ; i++) {
-            SubImageView ssv = (SubImageView) vg.getChildAt(i);
-            addListener(ssv);
-        }
-    }
+    protected abstract int getContentViewId();
 
-    private void iniViews2() {
-        aQuery = new AQuery(this);
-        aQuery.find(R.id.btn_camera).clicked(this);
-        initSubViews();
-    }
+    protected abstract void initView();
 
-    private void iniViews() {
-        ((RelativeLayout) findViewById(R.id.camera_layout)).addView(mCamera);
+    protected abstract Bitmap getScreenShot();
 
-        aQuery = new AQuery(this);
-        aQuery.find(R.id.btnSwitch).clicked(this);
-        aQuery.find(R.id.btnTaken).clicked(this);
-        aQuery.find(R.id.btnFlashMode).clicked(this);
-        aQuery.find(R.id.btnFaceDetect).clicked(this);
-        initSubViews();
-    }
-
-    private void initSubViews() {
-        mGridView = (GridView)findViewById(R.id.grid_view);
-        mGridView.setAdapter(new MyListAdapter(this));
-    }
+    protected abstract View getContainer();
 
     private int findDefaultCameraId() {
         // Find the ID of the default camera
@@ -179,7 +150,7 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
         BitmapDrawable drawable = (BitmapDrawable) BitmapDrawable.createFromStream(
                 getAssets().open(background), background);
         drawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
-        findViewById(R.id.sub_container).setBackgroundDrawable(drawable);
+        getContainer().setBackgroundDrawable(drawable);
     }
 
     private int getPrevIdx() {
@@ -334,7 +305,7 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
             prevBackground();
             break;
         case R.id.btn_camera:
-            final Bitmap bm = getScreenShot2();
+            final Bitmap bm = getScreenShot();
             aQuery.find(R.id.image_screenshot).image(bm);
             Task.callInBackground(new Callable<Void>() {
                 @Override
@@ -346,39 +317,16 @@ public class CameraActivity extends Activity implements CvCameraViewListener, On
                 @Override
                 public Void then(Task<Void> task) throws Exception {
                     if (task.isFaulted()) {
-                        Toast.makeText(CameraActivity.this, "error " + task.getError(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(BaseCameraActivity.this, "error " + task.getError(), Toast.LENGTH_LONG).show();
                         task.getError().printStackTrace();
                     }
                     if (task.isCompleted()) {
-                        Toast.makeText(CameraActivity.this, "save finish", Toast.LENGTH_LONG).show();
+                        Toast.makeText(BaseCameraActivity.this, "save finish", Toast.LENGTH_LONG).show();
                     }
                     return null;
                 }
             }, Utils.sUiThreadExecutor);
             break;
         }
-    }
-
-    private Bitmap getScreenShot() {
-        Bitmap bitmap = Bitmap.createBitmap(mGridView.getWidth(), mGridView.getHeight(), Bitmap.Config.RGB_565);
-        Canvas canvas = new Canvas(bitmap);
-        for (int i = 0 ; i < mGridView.getChildCount() ; i++) {
-            SubSurfaceView sv = (SubSurfaceView)mGridView.getChildAt(i);
-            sv.drawLastCache(canvas);
-        }
-        return bitmap;
-    }
-
-    private Bitmap getScreenShot2() {
-        ViewGroup view = (ViewGroup) findViewById(R.id.sub_container);
-        view.buildDrawingCache();
-        Bitmap bitmap = view.getDrawingCache();
-//        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.RGB_565);
-//        Canvas canvas = new Canvas(bitmap);
-//        for (int i = 0 ; i < view.getChildCount() ; i++) {
-//            SubImageView sv = (SubImageView)view.getChildAt(i);
-//            sv.drawLastCache(canvas);
-//        }
-        return bitmap;
     }
 }
