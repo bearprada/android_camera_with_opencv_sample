@@ -35,7 +35,7 @@ public class MyListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup container) {
-        SubSurfaceView view = new SubSurfaceView(mActivity);
+        SubImageView view = new SubImageView(mActivity);
         view.setLayoutParams(new GridView.LayoutParams(mItemWidth, mItemHeight));
         view.setId(position);
         mActivity.addListener(view);

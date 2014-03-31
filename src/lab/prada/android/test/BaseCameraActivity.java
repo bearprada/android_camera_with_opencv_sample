@@ -150,7 +150,9 @@ public abstract class BaseCameraActivity extends Activity implements CvCameraVie
         BitmapDrawable drawable = (BitmapDrawable) BitmapDrawable.createFromStream(
                 getAssets().open(background), background);
         drawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
-        getContainer().setBackgroundDrawable(drawable);
+        if (getContainer() != null) {
+            getContainer().setBackgroundDrawable(drawable);
+        }
     }
 
     private int getPrevIdx() {

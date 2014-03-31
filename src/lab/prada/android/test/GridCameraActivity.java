@@ -35,6 +35,6 @@ public class GridCameraActivity extends BaseCameraActivity {
 
     @Override
     protected View getContainer() {
-        return mGridView;
+        return null;
     }
 }

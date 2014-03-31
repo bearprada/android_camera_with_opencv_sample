@@ -48,9 +48,11 @@ public class SubSurfaceView extends SurfaceView implements ISubView{
         testBgPaint.setStrokeWidth(10);
     }
 
-    private void attachBuffer(Mat mat) {
+    @Override
+    public void onFrame(Mat mat) {
         if (mCacheBitmap == null) {
-            mCacheBitmap = Bitmap.createBitmap((int)mat.size().width, (int)mat.size().height, Bitmap.Config.ARGB_8888);
+            mCacheBitmap = Bitmap.createBitmap((int)mat.size().width, 
+                    (int)mat.size().height, Bitmap.Config.ARGB_8888);
         }
         Core.flip(mat, dstMat, mId % 2);
         Utils.matToBitmap(dstMat, mCacheBitmap);
@@ -62,14 +64,9 @@ public class SubSurfaceView extends SurfaceView implements ISubView{
                 Rect dst = new Rect(0, 0, getWidth(), getHeight()); 
                 canvas.drawBitmap(mCacheBitmap, src, dst, null);
                 canvas.drawRect(new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), testBgPaint);
-                this.getHolder().unlockCanvasAndPost(canvas);
+                getHolder().unlockCanvasAndPost(canvas);
             }
         }
-    }
-
-    @Override
-    public void onFrame(Mat inputFrame) {
-        attachBuffer(inputFrame);
     }
 
     @Override
