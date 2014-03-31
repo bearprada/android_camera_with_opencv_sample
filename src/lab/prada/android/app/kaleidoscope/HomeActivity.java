@@ -1,4 +1,4 @@
-package lab.prada.android.test;
+package lab.prada.android.app.kaleidoscope;
 
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.Options;

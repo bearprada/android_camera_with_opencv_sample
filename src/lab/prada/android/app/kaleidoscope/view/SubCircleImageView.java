@@ -1,4 +1,4 @@
-package lab.prada.android.test.view;
+package lab.prada.android.app.kaleidoscope.view;
 
 import java.util.concurrent.Callable;
 
@@ -63,7 +63,7 @@ public class SubCircleImageView extends CircularImageView implements ISubView {
                     setImageBitmap(mCacheBitmap);
                     return null;
                 }
-            }, lab.prada.android.test.Utils.sUiThreadExecutor);
+            }, lab.prada.android.app.kaleidoscope.utils.Utils.sUiThreadExecutor);
             
         }
     }

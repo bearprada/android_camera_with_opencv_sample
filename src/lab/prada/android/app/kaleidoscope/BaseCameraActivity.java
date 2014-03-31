@@ -1,12 +1,14 @@
-package lab.prada.android.test;
+package lab.prada.android.app.kaleidoscope;
 
 import java.io.IOException;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 
+import lab.prada.android.app.kaleidoscope.opencv.ExtendedJavaCamera;
+import lab.prada.android.app.kaleidoscope.utils.Utils;
+
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener;
 import org.opencv.core.Mat;
-import org.opencv.samples.facedetect.FaceDetector;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,7 +38,6 @@ public abstract class BaseCameraActivity extends Activity implements CvCameraVie
 
     static {
         System.loadLibrary("opencv_java");
-        System.loadLibrary("detection_based_tracker");
     }
 
     private int numberOfCameras;
@@ -49,7 +50,6 @@ public abstract class BaseCameraActivity extends Activity implements CvCameraVie
     protected AQuery aQuery;
     private ExtendedJavaCamera mCamera;
     private Vector<OnCameraFrameListener> mListener = new Vector<OnCameraFrameListener>();
-    private FaceDetector mFaceDetector;
     private BackgroundManager mBackgroundMgr;
 
     @Override
@@ -77,7 +77,6 @@ public abstract class BaseCameraActivity extends Activity implements CvCameraVie
 
         initView();
 
-        mFaceDetector = new FaceDetector(this);
         mBackgroundMgr = BackgroundManager.getInstance(this);
 
         try {
@@ -259,11 +258,7 @@ public abstract class BaseCameraActivity extends Activity implements CvCameraVie
                 l.onFrame(inputFrame);
             }
         }
-        if (isOpenFaceDetection == true) {
-            return mFaceDetector.onFrame(inputFrame);
-        } else {
-            return inputFrame;
-        }
+        return inputFrame;
     }
 
     public interface OnCameraFrameListener {

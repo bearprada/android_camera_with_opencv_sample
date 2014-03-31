@@ -1,4 +1,4 @@
-package lab.prada.android.test.view;
+package lab.prada.android.app.kaleidoscope.view;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;

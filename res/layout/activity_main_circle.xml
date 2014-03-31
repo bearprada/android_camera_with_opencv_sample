@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-     <lab.prada.android.test.view.SubImageView
+     <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="215dp"
         android:rotation="240"
@@ -19,7 +19,7 @@
         android:translationY="50dp"
         android:layout_centerInParent="true" />
 
-    <lab.prada.android.test.view.SubImageView
+    <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="225dp"
         android:rotation="210"
@@ -28,7 +28,7 @@
         android:translationY="100dp"
         android:layout_centerInParent="true" />
 
-    <lab.prada.android.test.view.SubImageView
+    <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="250dp"
         android:rotation="180"
@@ -36,7 +36,7 @@
         android:translationY="125dp"
         android:layout_centerInParent="true" />
 
-    <lab.prada.android.test.view.SubImageView
+    <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="225dp"
         android:rotation="150"
@@ -45,7 +45,7 @@
         android:translationY="100dp"
         android:layout_centerInParent="true" />
 
-    <lab.prada.android.test.view.SubImageView
+    <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="215dp"
         android:rotation="120"
@@ -54,7 +54,7 @@
         android:translationY="50dp"
         android:layout_centerInParent="true" />
 
-    <lab.prada.android.test.view.SubImageView
+    <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="225dp"
         android:rotation="30"
@@ -62,7 +62,7 @@
         android:translationX="50dp"
         android:translationY="-100dp"
         android:layout_centerInParent="true" />
-    <lab.prada.android.test.view.SubImageView
+    <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="215dp"
         android:rotation="60"
@@ -70,7 +70,7 @@
         android:translationX="85dp"
         android:translationY="-50dp"
         android:layout_centerInParent="true" />
-    <lab.prada.android.test.view.SubImageView
+    <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="200dp"
         android:rotation="90"
@@ -79,7 +79,7 @@
         android:translationY="0dp"
         android:layout_centerInParent="true" />
 
-    <lab.prada.android.test.view.SubImageView
+    <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="200dp"
         android:rotation="-90"
@@ -88,7 +88,7 @@
         android:translationY="0dp"
         android:layout_centerInParent="true" />
     
-     <lab.prada.android.test.view.SubImageView
+     <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="215dp"
         android:rotation="-60"
@@ -97,7 +97,7 @@
         android:translationY="-50dp"
         android:layout_centerInParent="true" />
 
-     <lab.prada.android.test.view.SubImageView
+     <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="225dp"
         android:rotation="-30"
@@ -106,7 +106,7 @@
         android:translationY="-100dp"
         android:layout_centerInParent="true" />
 
-     <lab.prada.android.test.view.SubImageView
+     <lab.prada.android.app.kaleidoscope.view.SubImageView
         android:layout_width="100dp"
         android:layout_height="250dp"
         android:rotation="0"

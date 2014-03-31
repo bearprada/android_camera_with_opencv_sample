@@ -1,7 +1,7 @@
-package lab.prada.android.test.view;
+package lab.prada.android.app.kaleidoscope.view;
 
-import lab.prada.android.test.BaseCameraActivity;
-import lab.prada.android.test.Utils;
+import lab.prada.android.app.kaleidoscope.BaseCameraActivity;
+import lab.prada.android.app.kaleidoscope.utils.Utils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;

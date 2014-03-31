@@ -1,4 +1,4 @@
-package lab.prada.android.test;
+package lab.prada.android.app.kaleidoscope.utils;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;

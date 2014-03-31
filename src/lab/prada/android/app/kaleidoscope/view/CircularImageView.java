@@ -1,6 +1,6 @@
-package lab.prada.android.test.view;
+package lab.prada.android.app.kaleidoscope.view;
 
-import lab.prada.android.test.R;
+import lab.prada.android.app.kaleidoscope.R;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;

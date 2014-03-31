@@ -1,4 +1,4 @@
-package lab.prada.android.test;
+package lab.prada.android.app.kaleidoscope.opencv;
 
 import org.opencv.android.JavaCameraView;
 

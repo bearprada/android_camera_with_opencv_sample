@@ -1,7 +1,7 @@
-package lab.prada.android.test;
+package lab.prada.android.app.kaleidoscope;
 
-import lab.prada.android.test.view.ISubView;
-import lab.prada.android.test.view.MyListAdapter;
+import lab.prada.android.app.kaleidoscope.view.ISubView;
+import lab.prada.android.app.kaleidoscope.view.MyListAdapter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.View;

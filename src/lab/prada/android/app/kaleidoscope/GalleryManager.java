@@ -1,4 +1,4 @@
-package lab.prada.android.test;
+package lab.prada.android.app.kaleidoscope;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -1,6 +1,6 @@
-package lab.prada.android.test;
+package lab.prada.android.app.kaleidoscope;
 
-import lab.prada.android.test.view.ISubView;
+import lab.prada.android.app.kaleidoscope.view.ISubView;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;

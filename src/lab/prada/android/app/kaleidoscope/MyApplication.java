@@ -1,4 +1,4 @@
-package lab.prada.android.test;
+package lab.prada.android.app.kaleidoscope;
 
 import com.cengalabs.flatui.FlatUI;
 
