@@ -42,6 +42,7 @@ public class HomeActivity extends Activity implements OnClickListener, OnRefresh
         header.findViewById(R.id.btn_create_circle).setOnClickListener(this);
         header.findViewById(R.id.btn_create_grid).setOnClickListener(this);
         header.findViewById(R.id.btn_create_blob).setOnClickListener(this);
+        header.findViewById(R.id.btn_create_free_form).setOnClickListener(this);
 
         mListView.addHeaderView(header);
         mListView.setAdapter(mAdapter);
@@ -93,6 +94,10 @@ public class HomeActivity extends Activity implements OnClickListener, OnRefresh
             break;
         case R.id.btn_create_blob:
             intent = new Intent(HomeActivity.this, BlobCameraActivity.class);
+            HomeActivity.this.startActivityForResult(intent, AR_FINISH_CAMERA);
+            break;
+        case R.id.btn_create_free_form:
+            intent = new Intent(HomeActivity.this, FreeFormCameraActivity.class);
             HomeActivity.this.startActivityForResult(intent, AR_FINISH_CAMERA);
             break;
         }

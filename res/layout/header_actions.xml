@@ -29,4 +29,12 @@
         android:text="Create Blob"
         android:layout_weight="1"
         android:layout_margin="3dp" />
+
+    <com.cengalabs.flatui.views.FlatButton
+        android:id="@+id/btn_create_free_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Freeform"
+        android:layout_weight="1"
+        android:layout_margin="3dp" />
 </LinearLayout>

@@ -50,7 +50,8 @@ public class SubImageView extends ImageView implements ISubView{
         testBgPaint.setStrokeWidth(10);
     }
 
-    private void attachBuffer(Mat mat) {
+    @Override
+    public void onFrame(Mat mat) {
         if (mCacheBitmap == null) {
             mCacheBitmap = Bitmap.createBitmap((int)mat.size().width, (int)mat.size().height, Bitmap.Config.ARGB_8888);
         }
@@ -66,11 +67,6 @@ public class SubImageView extends ImageView implements ISubView{
             }, lab.prada.android.app.kaleidoscope.utils.Utils.sUiThreadExecutor);
             
         }
-    }
-
-    @Override
-    public void onFrame(Mat inputFrame) {
-        attachBuffer(inputFrame);
     }
 
     @Override
