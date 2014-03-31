@@ -1,7 +1,7 @@
 package lab.prada.android.test;
 
+import lab.prada.android.test.view.ISubView;
 import lab.prada.android.test.view.MyListAdapter;
-import lab.prada.android.test.view.SubSurfaceView;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.View;
@@ -13,7 +13,7 @@ public class GridCameraActivity extends BaseCameraActivity {
 
     @Override
     protected int getContentViewId() {
-        return R.layout.activity_main_2;
+        return R.layout.activity_main_grid;
     }
 
     @Override
@@ -28,8 +28,7 @@ public class GridCameraActivity extends BaseCameraActivity {
                 Bitmap.Config.RGB_565);
         Canvas canvas = new Canvas(bitmap);
         for (int i = 0 ; i < mGridView.getChildCount() ; i++) {
-            SubSurfaceView sv = (SubSurfaceView)mGridView.getChildAt(i);
-            sv.drawLastCache(canvas);
+            ((ISubView)mGridView.getChildAt(i)).drawLastCache(canvas);
         }
         return bitmap;
     }

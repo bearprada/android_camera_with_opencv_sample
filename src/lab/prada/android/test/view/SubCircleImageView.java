@@ -12,25 +12,24 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 import bolts.Task;
 
-public class SubImageView extends ImageView implements ISubView{
+public class SubCircleImageView extends CircularImageView implements ISubView {
     private Bitmap mCacheBitmap;
     private Mat dstMat;
     private int mId;
 
-    public SubImageView(Context context) {
+    public SubCircleImageView(Context context) {
         super(context);
         init();
     }
 
-    public SubImageView(Context context, AttributeSet attrs) {
+    public SubCircleImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public SubImageView(Context context, AttributeSet attrs, int defStyle) {
+    public SubCircleImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -43,14 +42,14 @@ public class SubImageView extends ImageView implements ISubView{
     public void setId(int id) {
         mId = id;
     }
-
     private Paint testBgPaint = new Paint();
     {
         testBgPaint.setColor(Color.BLUE);
         testBgPaint.setStrokeWidth(10);
     }
 
-    private void attachBuffer(Mat mat) {
+    @Override
+    public void onFrame(Mat mat) {
         if (mCacheBitmap == null) {
             mCacheBitmap = Bitmap.createBitmap((int)mat.size().width, (int)mat.size().height, Bitmap.Config.ARGB_8888);
         }
@@ -69,18 +68,7 @@ public class SubImageView extends ImageView implements ISubView{
     }
 
     @Override
-    public void onFrame(Mat inputFrame) {
-        attachBuffer(inputFrame);
-    }
-
-    @Override
     public void drawLastCache(Canvas canvas) {
-        if (mCacheBitmap != null) {
-            canvas.save();
-            canvas.rotate(getRotation());
-            canvas.translate(getTranslationX(), getTranslationY());
-            canvas.drawBitmap(mCacheBitmap, getLeft() , getTop(), null);
-            canvas.restore();
-        }
+        onDraw(canvas); // FIXME
     }
 }

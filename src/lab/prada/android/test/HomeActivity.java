@@ -27,6 +27,7 @@ public class HomeActivity extends Activity implements OnClickListener {
         View header = LayoutInflater.from(this).inflate(R.layout.header_actions, null);
         header.findViewById(R.id.btn_create_circle).setOnClickListener(this);
         header.findViewById(R.id.btn_create_grid).setOnClickListener(this);
+        header.findViewById(R.id.btn_create_blob).setOnClickListener(this);
 
         mListView.addHeaderView(header);
         mListView.setAdapter(mAdapter);
@@ -74,6 +75,10 @@ public class HomeActivity extends Activity implements OnClickListener {
             break;
         case R.id.btn_create_grid:
             intent = new Intent(HomeActivity.this, GridCameraActivity.class);
+            HomeActivity.this.startActivityForResult(intent, AR_FINISH_CAMERA);
+            break;
+        case R.id.btn_create_blob:
+            intent = new Intent(HomeActivity.this, BlobCameraActivity.class);
             HomeActivity.this.startActivityForResult(intent, AR_FINISH_CAMERA);
             break;
         }

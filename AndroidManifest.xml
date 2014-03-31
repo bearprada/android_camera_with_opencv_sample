@@ -30,6 +30,10 @@
             android:label="@string/app_name" >
         </activity>
         <activity
+            android:name="lab.prada.android.test.BlobCameraActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
             android:name="lab.prada.android.test.HomeActivity"
             android:label="@string/app_name" >
             <intent-filter>
