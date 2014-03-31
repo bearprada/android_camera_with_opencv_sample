@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import bolts.Task;
 
@@ -69,6 +70,11 @@ public class SubCircleImageView extends CircularImageView implements ISubView {
 
     @Override
     public void drawLastCache(Canvas canvas) {
+//        canvas.save(); // FIXME get the same result : View.getDrawingCache
+//        Rect rect = new Rect();
+//        this.getDrawingRect(rect);
+//        canvas.clipRect(rect);
         onDraw(canvas); // FIXME
+//        canvas.restore();
     }
 }

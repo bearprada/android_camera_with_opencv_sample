@@ -1,5 +1,10 @@
 package lab.prada.android.test;
 
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.Options;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
+import uk.co.senab.actionbarpulltorefresh.library.viewdelegates.AbsListViewDelegate;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,17 +15,26 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
 
-public class HomeActivity extends Activity implements OnClickListener {
+public class HomeActivity extends Activity implements OnClickListener, OnRefreshListener {
 
     protected static final int AR_FINISH_CAMERA = 1;
     private ListView mListView;
     private GalleryAdapter mAdapter;
     private GalleryManager mGalleryMgr;
+    private PullToRefreshLayout mPullToRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        mPullToRefreshLayout = (PullToRefreshLayout) findViewById(R.id.ptr_layout);
+
+        ActionBarPullToRefresh
+                .from(this).options(Options.create().scrollDistance(.5f).build())
+                .theseChildrenArePullable(R.id.list_view)
+                .useViewDelegate(ListView.class, new AbsListViewDelegate())
+                .listener(this).setup(mPullToRefreshLayout);
+
         mListView = (ListView)findViewById(R.id.list_view);
         mAdapter = new GalleryAdapter(this);
 
@@ -82,5 +96,11 @@ public class HomeActivity extends Activity implements OnClickListener {
             HomeActivity.this.startActivityForResult(intent, AR_FINISH_CAMERA);
             break;
         }
+    }
+
+    @Override
+    public void onRefreshStarted(View view) {
+        refreshData();
+        mPullToRefreshLayout.setRefreshComplete();
     }
 }

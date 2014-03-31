@@ -3,6 +3,7 @@ package lab.prada.android.test;
 import java.io.File;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -13,8 +14,11 @@ import com.androidquery.callback.BitmapAjaxCallback;
 
 public class GalleryAdapter extends ArrayAdapter<File> {
 
+    private LayoutInflater mInflater;
+
     public GalleryAdapter(Context context) {
         super(context, 0, 0);
+        mInflater = LayoutInflater.from(context);
     }
 
     @Override
@@ -24,10 +28,10 @@ public class GalleryAdapter extends ArrayAdapter<File> {
         if (convertView != null) {
             view = convertView;
         } else {
-            view = new ImageView(getContext());
+            view = mInflater.inflate(R.layout.item_photo, null);
         }
         AQuery aq = new AQuery(view);
-        aq.image(new BitmapAjaxCallback().file(file));
+        aq.find(R.id.image).image(new BitmapAjaxCallback().file(file));
         return view;
     }
 }
