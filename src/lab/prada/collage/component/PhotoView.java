@@ -77,7 +77,6 @@ public class PhotoView extends ImageView implements BaseComponent, ISubView {
 
     @Override
     public void drawLastCache(Canvas canvas) {
-        // TODO Auto-generated method stub
-        
+        // TODO
     }
 }

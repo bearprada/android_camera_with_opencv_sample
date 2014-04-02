@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">TestAndroidCameraFeature</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">Kaleidoscope</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_multiple_image_picker">Selected Images</string>
     <string name="over_num_of_images">Over the Number of Images You Selectedf.</string>
