@@ -68,4 +68,16 @@
         android:layout_alignParentBottom="true"
         android:background="@android:color/transparent"
         android:src="@drawable/btn_ice" />
+
+    <ImageButton
+        android:id="@+id/btn_switch_camera"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/btn_frozon"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/btn_switch_camera"
+        android:visibility="gone" />
+    
 </RelativeLayout>

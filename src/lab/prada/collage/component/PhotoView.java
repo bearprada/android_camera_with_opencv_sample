@@ -72,7 +72,13 @@ public class PhotoView extends ImageView implements BaseComponent, ISubView {
             }, lab.prada.android.app.kaleidoscope.utils.Utils.sUiThreadExecutor);
             
         }
-        
+    }
+
+    public void reset() {
+        if (mCacheBitmap != null) {
+            mCacheBitmap.recycle();
+            mCacheBitmap = null;
+        }
     }
 
     @Override

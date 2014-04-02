@@ -1,6 +1,7 @@
 package lab.prada.android.app.kaleidoscope;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 
@@ -64,7 +65,7 @@ public abstract class BaseCameraActivity extends Activity implements CvCameraVie
         setContentView(getContentViewId());
 
         numberOfCameras = Camera.getNumberOfCameras();
-        defaultCameraId = findDefaultCameraId();
+        defaultCameraId = getRandomCameraId();
         mCamera = new ExtendedJavaCamera(this, defaultCameraId);
         mCamera.setMaxFrameSize(480, 480);
         ((ViewGroup)findViewById(R.id.root)).addView(mCamera, 0);
@@ -104,6 +105,13 @@ public abstract class BaseCameraActivity extends Activity implements CvCameraVie
             }
         }
         return 0;
+    }
+
+    private static int count = 0;
+    private java.util.Random random = new java.util.Random();
+    private int getRandomCameraId() {
+//        return random.nextInt(numberOfCameras);
+        return count ++ % numberOfCameras;
     }
 
     private static class BackgroundManager {
@@ -202,7 +210,7 @@ public abstract class BaseCameraActivity extends Activity implements CvCameraVie
         return true;
     }
 
-    private void switchCamera() {
+    protected void switchCamera() {
         if (numberOfCameras == 1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("only one camera").setNeutralButton("Close",
@@ -218,7 +226,7 @@ public abstract class BaseCameraActivity extends Activity implements CvCameraVie
         ExtendedJavaCamera newCamera = new ExtendedJavaCamera(this,
                 currentCameraId);
         newCamera.setMaxFrameSize(240, 240);
-        replaceView((ViewGroup) findViewById(R.id.camera_layout), mCamera, newCamera);
+        replaceView((ViewGroup) getContainer(), mCamera, newCamera);
         mCamera.setCvCameraViewListener(null);
         mCamera = newCamera;
         mCamera.enableView();

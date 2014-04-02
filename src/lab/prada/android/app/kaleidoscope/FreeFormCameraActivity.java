@@ -26,6 +26,7 @@ public class FreeFormCameraActivity extends BaseCameraActivity {
         aQuery.find(R.id.btnAddPic).clicked(this, "clickAddPreview");
         mPhotoPanel = (ViewGroup) aQuery.find(R.id.frame_images).getView();
         aQuery.find(R.id.btn_frozon).clicked(this, "clickFrezze");
+        aQuery.find(R.id.btn_switch_camera).clicked(this, "clickSwitchCamera");
     }
 
     @Override
@@ -43,6 +44,14 @@ public class FreeFormCameraActivity extends BaseCameraActivity {
         if (pv != null) {
             pv.freeze();
         }
+    }
+
+    synchronized public void clickSwitchCamera(View view) {
+        int len = mPhotoPanel.getChildCount();
+        for (int i = 0 ; i < len ; i++ ) {
+            ((OneShotPhotoView) mPhotoPanel.getChildAt(i)).reset();
+        }
+        switchCamera();
     }
 
     private OneShotPhotoView findAliveView() {
